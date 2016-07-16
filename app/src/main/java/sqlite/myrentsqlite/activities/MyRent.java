@@ -60,16 +60,18 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
   }
 
   /**
-   * This method demonstrates how to select a Residence record, identified by its primary key, the UUID field.
-   * To successfuly select a record it is necessary to obtain the key from an existing record by inspecting the database or from the Android Studio the debugger window.
-   * The key here is to be taken as a placeholder.
+   * This method demonstrates how to select a Residence record, identified by
+   * its primary key, the UUID field.
+   * Invoking addResidence() writes a Residence record to the database.
+   * Additionally, it initializes this.residence field.
+   * The id of this.residence is then used as a parameter in DbHelper.selectResidence.
    */
   public void selectResidence()
   {
-    String id = "6277ba13-4868-4f1c-8ed5-9440d9a16bd5";
-    UUID uuid = UUID.fromString(id);
-    Residence residence = app.dbHelper.selectResidence(uuid);
-    if (residence != null && residence.id.toString().equals(id))
+    addResidence();
+    UUID uuid = residence.id;
+    Residence selectedResidence = app.dbHelper.selectResidence(uuid);
+    if (residence != null && residence.id.toString().equals(selectedResidence.id.toString()))
     {
       Toast.makeText(this, "Residence record selected(id: " + residence.id, Toast.LENGTH_LONG).show();
     }
