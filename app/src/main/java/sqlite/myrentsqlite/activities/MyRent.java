@@ -95,10 +95,9 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
     {
       addResidence();
     }
-    else {
-      Residence res = app.dbHelper.selectResidence(residence.id);
-      app.dbHelper.deleteResidence(res);
-    }
+    Residence res = app.dbHelper.selectResidence(residence.id);
+    app.dbHelper.deleteResidence(res);
+    Toast.makeText(this, "Deleted Residence (id: " + res.id + ")", Toast.LENGTH_LONG).show();
   }
 
 }
