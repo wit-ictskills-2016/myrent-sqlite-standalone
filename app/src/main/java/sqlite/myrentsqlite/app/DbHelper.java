@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import sqlite.myrentsqlite.models.Residence;
@@ -23,19 +25,17 @@ public class DbHelper extends SQLiteOpenHelper
 
   Context context;
 
-  public DbHelper(Context context)
-  {
+  public DbHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
     this.context = context;
   }
 
   @Override
-  public void onCreate(SQLiteDatabase db)
-  {
+  public void onCreate(SQLiteDatabase db) {
     String createTable =
         "CREATE TABLE tableResidences " +
-        "(id text primary key, " +
-        "geolocation text)";
+            "(id text primary key, " +
+            "geolocation text)";
 
     db.execSQL(createTable);
     Log.d(TAG, "DbHelper.onCreated: " + createTable);
@@ -44,8 +44,7 @@ public class DbHelper extends SQLiteOpenHelper
   /**
    * @param residence Reference to Residence object to be added to database
    */
-  public void addResidence(Residence residence)
-  {
+  public void addResidence(Residence residence) {
     SQLiteDatabase db = this.getWritableDatabase();
     ContentValues values = new ContentValues();
     values.put(PRIMARY_KEY, residence.id.toString());
@@ -71,7 +70,8 @@ public class DbHelper extends SQLiteOpenHelper
         residence.id = UUID.fromString(cursor.getString(columnIndex++));
         residence.geolocation = cursor.getString(columnIndex++);
       }
-    } finally {
+    }
+    finally {
       cursor.close();
     }
     return residence;
@@ -81,14 +81,40 @@ public class DbHelper extends SQLiteOpenHelper
     SQLiteDatabase db = this.getWritableDatabase();
     try {
       db.delete("tableResidences", "id" + "=?", new String[]{residence.id.toString() + ""});
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       Log.d(TAG, "delete residence failure: " + e.getMessage());
     }
   }
 
+  /**
+   * Query database and select entire tableResidences.
+   *
+   * @return A list of Residence object records
+   */
+  public List<Residence> selectResidences() {
+    List<Residence> residences = new ArrayList<Residence>();
+    String query = "SELECT * FROM " + "tableResidences";
+    SQLiteDatabase db = this.getWritableDatabase();
+    Cursor cursor = db.rawQuery(query, null);
+    if (cursor.moveToFirst()) {
+      int columnIndex = 0;
+      do {
+        Residence residence = new Residence();
+        residence.id = UUID.fromString(cursor.getString(columnIndex++));
+        residence.geolocation = cursor.getString(columnIndex++);
+
+        columnIndex = 0;
+
+        residences.add(residence);
+      } while (cursor.moveToNext());
+    }
+    cursor.close();
+    return residences;
+  }
+
   @Override
-  public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-  {
+  public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     db.execSQL("drop table if exists " + TABLE_RESIDENCES);
     Log.d(TAG, "onUpdated");
     onCreate(db);
