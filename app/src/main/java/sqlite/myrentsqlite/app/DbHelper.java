@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,11 @@ public class DbHelper extends SQLiteOpenHelper
 
   static final String PRIMARY_KEY = "id";
   static final String GEOLOCATION = "geolocation";
+  static final String DATE = "date";
+  static final String RENTED = "rented";
+  static final String TENANT = "tenant";
+  static final String ZOOM = "zoom";
+  static final String PHOTO = "photo";
 
   Context context;
 
@@ -36,7 +42,12 @@ public class DbHelper extends SQLiteOpenHelper
     String createTable =
         "CREATE TABLE tableResidences " +
             "(id text primary key, " +
-            "geolocation text)";
+            "geolocation text," +
+            "date text," +
+            "rented text," +
+            "tenant text," +
+            "zoom text," +
+            "photo text)";
 
     db.execSQL(createTable);
     Log.d(TAG, "DbHelper.onCreated: " + createTable);
@@ -50,6 +61,12 @@ public class DbHelper extends SQLiteOpenHelper
     ContentValues values = new ContentValues();
     values.put(PRIMARY_KEY, residence.id.toString());
     values.put(GEOLOCATION, residence.geolocation);
+    values.put(DATE, String.valueOf(residence.date.getTime()));
+    values.put(RENTED, residence.rented == true ? "yes" : "no");
+    values.put(TENANT, residence.tenant);
+    values.put(ZOOM, Double.toString(residence.zoom));
+    values.put(PHOTO, residence.photo);
+
     // Insert record
     db.insert(TABLE_RESIDENCES, null, values);
     db.close();
@@ -70,6 +87,11 @@ public class DbHelper extends SQLiteOpenHelper
         cursor.moveToFirst();
         residence.id = UUID.fromString(cursor.getString(columnIndex++));
         residence.geolocation = cursor.getString(columnIndex++);
+        residence.date = new Date(Long.parseLong(cursor.getString(columnIndex++)));
+        residence.rented = cursor.getString(columnIndex++) == "yes" ? true : false;
+        residence.tenant = cursor.getString(columnIndex++);
+        residence.zoom = Double.parseDouble(cursor.getString(columnIndex++));
+        residence.photo = cursor.getString(columnIndex++);
       }
     }
     finally {
@@ -104,7 +126,11 @@ public class DbHelper extends SQLiteOpenHelper
         Residence residence = new Residence();
         residence.id = UUID.fromString(cursor.getString(columnIndex++));
         residence.geolocation = cursor.getString(columnIndex++);
-
+        residence.date = new Date(Long.parseLong(cursor.getString(columnIndex++)));
+        residence.rented = cursor.getString(columnIndex++) == "yes" ? true : false;
+        residence.tenant = cursor.getString(columnIndex++);
+        residence.zoom = Double.parseDouble(cursor.getString(columnIndex++));
+        residence.photo = cursor.getString(columnIndex++);
         columnIndex = 0;
 
         residences.add(residence);
@@ -126,6 +152,7 @@ public class DbHelper extends SQLiteOpenHelper
     }
   }
 
+
   /**
    * Queries the database for the number of records.
    *
@@ -136,6 +163,29 @@ public class DbHelper extends SQLiteOpenHelper
     long numberRecords  = DatabaseUtils.queryNumEntries(db, TABLE_RESIDENCES);
     db.close();
     return numberRecords;
+  }
+
+
+  /**
+   * Update an existing Residence record.
+   * All fields except record id updated.
+   *
+   * @param residence The Residence record being updated.
+   */
+  public void updateResidence(Residence residence) {
+    SQLiteDatabase db = this.getWritableDatabase();
+    try {
+      ContentValues values = new ContentValues();
+      values.put(GEOLOCATION, residence.geolocation);
+      values.put(DATE, String.valueOf(residence.date.getTime()));
+      values.put(RENTED, residence.rented == true ? "yes" : "no");
+      values.put(TENANT, residence.tenant);
+      values.put(ZOOM, Double.toString(residence.zoom));
+      values.put(PHOTO, residence.photo);
+      db.update("tableResidences", values, "id" + "=?",  new String[]{residence.id.toString() + ""});
+    } catch (Exception e) {
+      Log.d(TAG, "update residences failure: " + e.getMessage());
+    }
   }
 
   @Override
