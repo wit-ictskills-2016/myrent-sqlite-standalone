@@ -20,6 +20,7 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
   private Button selectResidence;
   private Button deleteResidence;
   private Button selectResidences;
+  private Button deleteResidences;
 
   MyRentApp app;
   Residence residence;
@@ -42,6 +43,9 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
 
     selectResidences = (Button) findViewById(R.id.selectResidences);
     selectResidences.setOnClickListener(this);
+
+    deleteResidences = (Button) findViewById(R.id.deleteResidences);
+    deleteResidences.setOnClickListener(this);
   }
 
   @Override
@@ -61,6 +65,10 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
 
       case R.id.selectResidences:
         selectResidences();
+        break;
+
+      case R.id.deleteResidences:
+        deleteResidences();
         break;
     }
   }
@@ -103,5 +111,16 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
   public void selectResidences() {
     List<Residence> residences = app.dbHelper.selectResidences();
     Toast.makeText(this, "Retrieved residence list containing  " + residences.size() + " records", Toast.LENGTH_LONG).show();
+  }
+
+  /**
+   * Delete all records.
+   * Count the number of rows in database following deletion -should be zero.
+   * Provide user feed back in a toast.
+   */
+  public void deleteResidences() {
+    app.dbHelper.deleteResidences();
+    Toast.makeText(this, "Number of records in database " + app.dbHelper.getCount(), Toast.LENGTH_LONG).show();
+
   }
 }
