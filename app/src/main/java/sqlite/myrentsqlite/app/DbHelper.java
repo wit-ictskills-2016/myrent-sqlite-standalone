@@ -115,7 +115,7 @@ public class DbHelper extends SQLiteOpenHelper
    *
    * @return A list of Residence object records
    */
-  public List<Residence> selectResidences() {
+  public List<Residence> selectAllResidences() {
     List<Residence> residences = new ArrayList<Residence>();
     String query = "SELECT * FROM " + "tableResidences";
     SQLiteDatabase db = this.getWritableDatabase();
@@ -143,7 +143,7 @@ public class DbHelper extends SQLiteOpenHelper
   /**
    * Delete all records
    */
-  public void deleteResidences() {
+  public void deleteAllResidences() {
     SQLiteDatabase db = this.getWritableDatabase();
     try {
       db.execSQL("delete from tableResidences");

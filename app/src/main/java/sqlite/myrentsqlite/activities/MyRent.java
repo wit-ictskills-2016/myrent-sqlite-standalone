@@ -118,7 +118,7 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
   }
 
   public void selectResidences() {
-    List<Residence> residences = app.dbHelper.selectResidences();
+    List<Residence> residences = app.dbHelper.selectAllResidences();
     Toast.makeText(this, "Retrieved residence list containing  " + residences.size() + " records", Toast.LENGTH_LONG).show();
   }
 
@@ -128,7 +128,7 @@ public class MyRent extends AppCompatActivity implements View.OnClickListener
    * Provide user feed back in a toast.
    */
   public void deleteResidences() {
-    app.dbHelper.deleteResidences();
+    app.dbHelper.deleteAllResidences();
     Toast.makeText(this, "Number of records in database " + app.dbHelper.getCount(), Toast.LENGTH_LONG).show();
 
   }
